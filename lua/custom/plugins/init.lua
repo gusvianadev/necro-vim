@@ -18,7 +18,7 @@ return {
     end,
   },
 
-  {
+  { -- Buffer line
     'akinsho/bufferline.nvim',
     dependencies = 'nvim-tree/nvim-web-devicons',
     config = function()
@@ -38,7 +38,6 @@ return {
       require('copilot').setup {
         filetypes = {
           rust = false,
-          go = false,
         },
         suggestion = {
           auto_trigger = true,
@@ -48,5 +47,21 @@ return {
         },
       }
     end,
+  },
+
+  { -- Rust utilities
+    'mrcjkb/rustaceanvim',
+    version = '^5', -- Recommended
+    lazy = false, -- This plugin is already lazy
+    dependencies = {
+      {
+        'saecki/crates.nvim',
+        tag = 'stable',
+        event = { 'BufRead Cargo.toml' },
+        config = function()
+          require('crates').setup {}
+        end,
+      },
+    },
   },
 }

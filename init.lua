@@ -12,7 +12,7 @@ vim.opt.completeopt = 'menuone,noselect'
 vim.opt.conceallevel = 0
 vim.opt.cursorline = true
 vim.opt.errorbells = false
-vim.opt.expandtab = false
+vim.opt.expandtab = true
 vim.opt.guicursor = ''
 vim.opt.hlsearch = false
 vim.opt.ignorecase = true
@@ -23,7 +23,7 @@ vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.mouse = 'a'
 vim.opt.number = true
-vim.opt.relativenumber = true
+vim.opt.relativenumber = false
 vim.opt.ruler = true
 vim.opt.scrolloff = 8
 vim.opt.shiftwidth = 4
@@ -98,7 +98,6 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Configure and install plugins ]]
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
@@ -245,6 +244,7 @@ require('lazy').setup({
           map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
           map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+          map('<leader>e', vim.diagnostic.open_float, 'Open floating diagnostic message')
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
           -- The following two autocommands are used to highlight references of the
@@ -326,15 +326,15 @@ require('lazy').setup({
         'stylua',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      require('mason-lspconfig').setup()
 
-      require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+      require('mason-lspconfig').setup_handlers {
+        function(server_name)
+          local server = servers[server_name] or {}
+          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+          require('lspconfig')[server_name].setup(server)
+        end,
+        ['rust_analyzer'] = function() end,
       }
     end,
   },
@@ -364,6 +364,11 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        toml = { 'taplo' },
       },
     },
   },
