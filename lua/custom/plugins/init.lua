@@ -3,6 +3,7 @@
 --
 -- See the kickstart.nvim README for more information
 return {
+    "pixelastic/vim-undodir-tree", -- Will this work? It's really old
   { -- File tree
     'nvim-tree/nvim-tree.lua',
     config = function()
